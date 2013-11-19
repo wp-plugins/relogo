@@ -29,19 +29,26 @@ function cc_relogo_admin_init() {
 		'cc_relogo_options_callback',		// Callback function for displaying information
 		'cc-relogo'							// Page ID for the options page
 	);
-	
-	add_settings_field(
-		'logourl',							// Field ID
-		'Logo URL',							// Field title, displayed to the left of the field on the options page
-		'cc_relogo_logourl_callback',		// Callback function to display the field
+
+	add_settings_field(						// Toggle the rel="logo" tag in <head>
+		'active',							// Field ID
+		'Active?',							// Field title, displayed to the left of the field on the options page
+		'cc_relogo_active_callback',		// Callback function to display the field
 		'cc-relogo',						// Page ID for the options page
 		'options'							// Settings section in which to display the field
+	);	
+	add_settings_field(						// Logo URL
+		'logourl',
+		'Logo URL',
+		'cc_relogo_logourl_callback',
+		'cc-relogo',
+		'options'
 	);
 }
 
 /* Display information about settings section */
 function cc_relogo_options_callback() {
-	echo '<p>Please provide a URL to the SVG file you would like to use.</p>';
+	echo '<p>Please provide the URL to the SVG file you would like to use.</p>';
 }
 
 /* 'logourl callback' */
@@ -59,9 +66,25 @@ function cc_relogo_logourl_callback() {
 		$logourl_length = strlen( $options['logourl'] ); // Use the length of the current value if it's between 60 and 90
 	}
 	
-	echo '<input id="logourl" name="cc_relogo_options[logourl]" type="text" size="'. $logourl_length . '" value="' . $options['logourl'] . '" />'; //Display text input field for 'logourl'
-} // End 'logourl' callback
+	echo '<input id="logourl" name="cc_relogo_options[logourl]" type="text" size="'. $logourl_length . '" value="' . $options['logourl'] . '" />'; // Display text input field for 'logourl'
+} // End cc_relogo_logourl_callback()
 
+/* Callback for 'active' */
+function cc_relogo_active_callback() {
+	$options = get_option( 'cc_relogo_options' ); // Retrieve plugin options from the database
+	
+	/* Determine whether the box should be checked based on setting in database */
+	if ( isset( $options['active'] ) ) {
+		$checked = 'checked';
+	}
+	else {
+		$checked = '';
+	}
+	
+	echo '<input id="active" name="cc_relogo_options[active]" type="checkbox" value="Active" ' . $checked . '>';
+} // End cc_relogo_active_callback()
+
+/* Validate the options submitted by the user */
 function cc_relogo_options_validate( $input ) {
 	$options = get_option( 'cc_relogo_options '); // Retrieve options from database
 	
@@ -71,7 +94,7 @@ function cc_relogo_options_validate( $input ) {
 	if ( preg_match( '/^http\:\/\/|https\:\/\//i', $logourl ) ) {
 		/* Check whether user provided .svg file, otherwise throw an error */
 		if ( preg_match( '/\.svg$/i', $logourl ) ) {
-			$options['logourl'] = $logourl;
+			$options['logourl'] = $logourl; // File type validates, pass input to the database options
 		}
 		else {
 			add_settings_error( 'cc_relogo_options', 'invalid-file-extension', 'You did not provide an SVG file.' );
@@ -81,8 +104,21 @@ function cc_relogo_options_validate( $input ) {
 		add_settings_error( 'cc_relogo_options', 'invalid-url-protocol', 'You did not provide a valid URL. The URL must start with either "http://" or "https://".' );
 	}
 	
+	/* Directly pass options not needing validation back to the database */
+	$options['active'] 		= $input['active'];
+	
 	return $options;
 } // End cc_relogo_options_validate()
+
+/* Provide the user with the <img> tag that uses the relogo.org API */
+function cc_relogo_api_imgtag() {
+	$url = get_site_url(); // Retrieve the site URL
+	$url = preg_replace( "/^http\:\/\/|https\:\/\//i", "", $url ); // Strip the protocol from the site URL
+	
+	$imgtag = '<strong>Use this tag to display your logo elsewhere:</strong> <pre><code>&lt;img src="http://relogo.org/api/' . $url . '" /&gt;</code></pre>'; // Create the <img> tag to display to the user
+	
+	echo $imgtag; // Display the tag
+}
 
 /**
  * Relogo Settings Page
@@ -105,6 +141,9 @@ function cc_relogo_options_page() {
 			submit_button();								// WordPress-generated 'Save Changes' button
 			?>
 		</form>
+		<?php
+		cc_relogo_api_imgtag(); // Display API-based <img> tag
+		?>
 	</div>
 	
 	<?php	
