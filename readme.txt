@@ -1,5 +1,6 @@
 === Relogo ===
 Contributors: cconover
+Donate link: https://christiaanconover.com/code/wp-relogo#donate
 Tags: logo, relogo, graphics, head
 Requires at least: 3.5.2
 Tested up to: 3.7.1
@@ -36,15 +37,15 @@ The rel="logo" spec requires the use of SVG (.svg) image files.
 = 0.4.1 =
 * Display admin notice if the tag is not set to Active. Version 0.4.0 adds field, but is off by default and user is not made aware.
 
-= 0.4 =
+= 0.4.0 =
 * Added toggle for making rel="logo" tag active. Allows adjustment of SVG URL before showing the tag.
 
-= 0.3 =
+= 0.3.0 =
 * Display HTML img tag on Options page for users to display their Relogo elsewhere
 * Allow uploading SVG files to WordPress media library
 
-= 0.2 =
+= 0.2.0 =
 * Validate URL in Options. Check for a valid protocol (HTTP or HTTPS) and a .svg file
 
-= 0.1 =
+= 0.1.0 =
 Initial release.
