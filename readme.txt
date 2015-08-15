@@ -3,7 +3,7 @@ Contributors: cconover
 Donate link: https://christiaanconover.com/code/wp-relogo#donate
 Tags: logo, relogo, graphics, head
 Requires at least: 3.5.2
-Tested up to: 3.7.1
+Tested up to: 4.3
 Stable tag: 0.4.2
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
